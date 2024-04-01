@@ -1,0 +1,76 @@
+Oef1: 
+SELECT w.wedstrijdnr, s.naam, s.voorletters
+FROM wedstrijden w
+JOIN teams t ON w.teamnr = t.teamnr
+JOIN spelers s ON t.spelersnr = s.spelersnr
+ORDER BY w.wedstrijdnr;
+
+Oef2 (Juiste output, fout in dropbox):
+SELECT DISTINCT naam, geslacht, 
+CASE
+	WHEN eind_datum is null then b.functie
+	ELSE null
+END AS functie
+FROM spelers s
+LEFT JOIN bestuursleden b using (spelersnr)
+WHERE geslacht = 'M' and naam like '%e%e%%'
+order by 1,3
+
+Oef3 (Juiste output, fout in dropbox):
+SELECT DISTINCT t.teamnr, t.divisie, w.wedstrijdnr, w.spelersnr,
+CASE
+	WHEN MAX(b1.eind_datum) is not NULL THEN 'actief'
+	ELSE '-'
+	END as bestuurslid
+FROM teams t 
+LEFT JOIN wedstrijden w ON t.teamnr = w.teamnr
+LEFT JOIN bestuursleden b1 on w.spelersnr = b1.spelersnr
+
+where w.gewonnen <w.verloren  
+
+GROUP BY t.teamnr,t.divisie, w.wedstrijdnr
+order by t.divisie, w.wedstrijdnr;
+
+Oef4:
+SELECT s.naam
+FROM spelers s
+LEFT OUTER JOIN wedstrijden w ON s.spelersnr = w.spelersnr
+WHERE w.wedstrijdnr ISNULL
+ORDER BY s.naam
+
+Oef5:
+SELECT s.spelersnr
+FROM spelers s
+LEFT JOIN boetes bo ON s.spelersnr = bo.spelersnr
+LEFT JOIN bestuursleden be ON s.spelersnr = be.spelersnr
+WHERE bo.bedrag isnull AND be.begin_datum ISNULL
+ORDER BY s.spelersnr DESC
+
+Oef6:
+Nog niet gevonden
+
+Oef7:
+Nog niet gevonden
+
+Oef8:
+SELECT S.spelersnr, S.naam, B.datum, B.bedrag
+FROM spelers S inner join boetes B on S.spelersnr = B.spelersnr
+WHERE B.bedrag > 45.50 AND S.plaats = 'Rijswijk'
+
+Oef9:
+SELECT t.spelersnr, s.naam, s.voorletters, t.divisie, w.wedstrijdnr
+FROM teams t INNER JOIN spelers s ON t.spelersnr = s.spelersnr
+	INNER JOIN wedstrijden w ON s.spelersnr = w.spelersnr
+WHERE geslacht = 'M'
+ORDER BY w.wedstrijdnr DESC
+
+Oef10:
+SELECT b.spelersnr, max(w.wedstrijdnr) AS laatstewedstrijd
+FROM bestuursleden b
+LEFT JOIN wedstrijden w ON b.spelersnr = w.spelersnr
+LEFT JOIN boetes bo ON b.spelersnr = bo.spelersnr
+WHERE b.eind_datum isnull AND bo.bedrag isnull
+GROUP BY b.spelersnr
+HAVING MAX (w.wedstrijdnr) notnull
+ORDER BY b.spelersnr desc
+
