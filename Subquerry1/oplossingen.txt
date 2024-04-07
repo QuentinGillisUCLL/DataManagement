@@ -1,0 +1,83 @@
+Oef1:
+select s.spelersnr, max(n.aantalboetes) as aantalboetes
+from spelers s
+join wedstrijden w on s.spelersnr = w.spelersnr
+left join (
+	select b.spelersnr, count(*) as aantalboetes
+	from boetes b
+	group by b.spelersnr
+) n on s.spelersnr = n.spelersnr
+group by s.spelersnr
+order by aantalboetes, s.spelersnr
+
+Oef2:
+SELECT spelersnr, wedstrijdnr
+FROM wedstrijden
+WHERE spelersnr NOT IN
+	(SELECT spelersnr
+	FROM bestuursleden
+	WHERE functie = 'Penningmeester')
+AND gewonnen > verloren;
+
+Oef3:
+select a.aantalboetes as a, count(*)
+from (
+    select spelersnr, count(*) as aantalboetes 
+    from boetes
+    group by spelersnr
+) a
+group by a.aantalboetes
+order by 1,2
+
+Oef4:
+SELECT spelersnr, naam, voorletters, toetredingsleeftijd
+FROM (
+    SELECT spelersnr, naam, voorletters, (jaartoe - EXTRACT(YEAR FROM geb_datum)) as toetredingsleeftijd
+    FROM spelers
+) AS subquery
+WHERE toetredingsleeftijd > 20
+order by 1,2,3,4
+
+Oef5:
+SELECT spelersnr, naam,voorletters, aantalboetes, aantalteams
+FROM spelers s
+INNER JOIN (
+	SELECT count(*) as aantalboetes, spelersnr
+	FROM boetes
+	group by spelersnr) 
+	b using(spelersnr)
+INNER JOIN (
+	SELECT count(*) as aantalteams, spelersnr
+	from teams
+	group by spelersnr)
+	t using(spelersnr)
+order by 1,2,3,4,5
+
+Oef6:
+SELECT spelersnr, naam, voorletters, CAST((jaartoe - AVG(jaartoe) OVER (PARTITION BY plaats)) AS NUMERIC(5, 3)) AS numeric
+FROM spelers
+ORDER BY spelersnr
+
+Oef7:
+SELECT s1.spelersnr, s1.plaats
+FROM spelers s1
+INNER JOIN 
+(
+    SELECT plaats
+    FROM spelers
+    GROUP BY plaats
+    HAVING COUNT(*) >= 2
+) s2 ON s1.plaats = s2.plaats
+ORDER BY s1.plaats DESC, s1.spelersnr;
+
+Oef8:
+SELECT s.spelersnr, s.naam, s.voorletters
+FROM spelers s
+INNER JOIN boetes b ON s.spelersnr = b.spelersnr
+WHERE b.bedrag = (
+    SELECT MAX(bedrag) FROM boetes
+)
+ORDER BY s.naam, s.voorletters;
+
+Oef9:
+Nog niet gevonden
